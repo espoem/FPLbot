@@ -10,8 +10,9 @@ from bs4 import BeautifulSoup
 from fpl import FPL
 from fpl.utils import position_converter, team_converter
 from pymongo import MongoClient, ReplaceOne
+from tabulate import tabulate
 
-from constants import (desired_attributes, player_dict, team_dict,
+from FPLbot.constants import (desired_attributes, player_dict, team_dict,
                        to_fpl_team_dict)
 
 client = MongoClient()
@@ -210,13 +211,13 @@ if __name__ == "__main__":
         loop.close()
 
 
-def player_vs_team_table(fixtures):
+def player_vs_team_table(fixtures, table_format="github"):
     """Returns a Markdown table showing the player's performance in the
     given fixtures.
     """
-    table = ("|Fixture|Date|MP|G|xG|A|xA|NPG|NPxG|KP|\n"
-             "|:-|:-:|-:|-:|-:|-:|-:|-:|-:|-:|\n")
-
+    header = ["Fixture", "Date", "MP", "G", "xG", "A", "xA", "NPG", "NPxG", "KP"]
+    col_align = ["left", "center", "right", "right", "right", "right", "right", "right", "right", "right"]
+    rows = []
     for fixture in fixtures:
         home_team = f"{fixture['h_team']} {fixture['h_goals']}"
         away_team = f"{fixture['a_goals']} {fixture['a_team']}"
@@ -231,17 +232,16 @@ def player_vs_team_table(fixtures):
         if fixture["position"].lower() != "sub":
             fixture["time"] = f"**{fixture['time']}**"
 
-        table += (
-            f"|{home_team}-{away_team}"
-            f"|{fixture['date']}"
-            f"|{fixture['time']}"
-            f"|{fixture['goals']}"
-            f"|{float(fixture['xG']):.2f}"
-            f"|{fixture['assists']}"
-            f"|{float(fixture['xA']):.2f}"
-            f"|{fixture['npg']}"
-            f"|{float(fixture['npxG']):.2f}"
-            f"|{fixture['key_passes']}|\n"
-        )
+        rows.append([f"{home_team}-{away_team}",
+            f"{fixture['date']}",
+            f"{fixture['time']}",
+            f"{fixture['goals']}",
+            f"{float(fixture['xG']):.2f}",
+            f"{fixture['assists']}",
+            f"{float(fixture['xA']):.2f}",
+            f"{fixture['npg']}",
+            f"{float(fixture['npxG']):.2f}",
+            f"{fixture['key_passes']}"])
 
+    table = tabulate(rows, headers=header, colalign=col_align, tablefmt=table_format)
     return table
