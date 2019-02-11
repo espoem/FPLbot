@@ -12,7 +12,7 @@ from fpl.utils import position_converter, team_converter
 from pymongo import MongoClient, ReplaceOne
 from tabulate import tabulate
 
-from FPLbot.constants import (desired_attributes, player_dict, team_dict,
+from constants import (desired_attributes, player_dict, team_dict,
                        to_fpl_team_dict)
 
 client = MongoClient()
@@ -211,7 +211,7 @@ if __name__ == "__main__":
         loop.close()
 
 
-def player_vs_team_table(fixtures, table_format="github"):
+def player_vs_team_table(fixtures, table_format="github", highlight=False):
     """Returns a Markdown table showing the player's performance in the
     given fixtures.
     """
@@ -222,17 +222,19 @@ def player_vs_team_table(fixtures, table_format="github"):
         home_team = f"{fixture['h_team']} {fixture['h_goals']}"
         away_team = f"{fixture['a_goals']} {fixture['a_team']}"
 
-        # Highlight the winning team
-        if int(fixture["h_goals"]) > int(fixture["a_goals"]):
-            home_team = f"**{home_team}**"
-        elif int(fixture["h_goals"]) < int(fixture["a_goals"]):
-            away_team = f"**{away_team}**"
+        if highlight:
+            # Highlight the winning team
+            if int(fixture["h_goals"]) > int(fixture["a_goals"]):
+                home_team = f"**{home_team}**"
+            elif int(fixture["h_goals"]) < int(fixture["a_goals"]):
+                away_team = f"**{away_team}**"
 
-        # Highlight whether the player was a starter or not
-        if fixture["position"].lower() != "sub":
-            fixture["time"] = f"**{fixture['time']}**"
+            # Highlight whether the player was a starter or not
+            if fixture["position"].lower() != "sub":
+                fixture["time"] = f"**{fixture['time']}**"
 
-        rows.append([f"{home_team}-{away_team}",
+        rows.append([
+            f"{home_team}-{away_team}",
             f"{fixture['date']}",
             f"{fixture['time']}",
             f"{fixture['goals']}",
@@ -243,5 +245,4 @@ def player_vs_team_table(fixtures, table_format="github"):
             f"{float(fixture['npxG']):.2f}",
             f"{fixture['key_passes']}"])
 
-    table = tabulate(rows, headers=header, colalign=col_align, tablefmt=table_format)
-    return table
+    return tabulate(rows, headers=header, colalign=col_align, tablefmt=table_format)

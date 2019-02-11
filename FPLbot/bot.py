@@ -110,7 +110,7 @@ class FPLBot:
             fixture_count += 1
             relevant_fixtures.append(fixture)
 
-        table = player_vs_team_table(relevant_fixtures, table_format="github")
+        table = player_vs_team_table(relevant_fixtures, table_format="github", highlight=True)
         return table
 
     def add_comment_to_database(self, comment):
