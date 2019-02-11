@@ -9,8 +9,8 @@ import praw
 from fpl import FPL
 from pymongo import MongoClient
 
-from FPLbot.constants import fpl_team_names, versus_pattern
-from FPLbot.utils import create_logger, get_player_table, to_fpl_team, update_players, player_vs_team_table
+from constants import fpl_team_names, versus_pattern
+from utils import create_logger, get_player_table, to_fpl_team, update_players, player_vs_team_table
 
 dirname = os.path.dirname(os.path.realpath(__file__))
 logger = create_logger()
